@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from "express";
+import AuthService from "../services/AuthService";
+import AuthError from "../exceptions/AuthError";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
@@ -9,8 +11,17 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     const [, token] = authHeader.split(' ');
 
-    if (token !== '123456') {
-        return res.status(401).json({error: 'Token invalid'})
+    try {
+        const authService = new AuthService()
+        const id = await authService.validateToken(token)
+        
+        req.user = { id, token }
+    } catch (error) {
+        if (error instanceof AuthError) {
+            return res.status(401).send()
+        }
+
+        return res.status(500).send()
     }
 
     return next()

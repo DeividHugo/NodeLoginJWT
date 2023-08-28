@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import AuthError from '@app/Auth/exceptions/AuthError' ;
 import config  from '@/config'
+import { decode } from 'punycode';
 
 export default class AuthService {
     async singIn(email: string, password: string): Promise<{ user: object, token: string}> {
@@ -29,5 +30,22 @@ export default class AuthService {
             },
             token,
         }
+    };
+
+    async validateToken(token: string): Promise<string> {
+        try {
+            const decoded = jwt.verify(token, config.auth.secret) as {
+                id: string
+            };
+            
+            return decoded.id;
+
+        } catch (error) {
+            throw new AuthError('Invalid token');
+        }
+    };
+
+    async destroy() {
+        
     }
 };
