@@ -16,6 +16,12 @@ class AuthController {
             return res.status(500).json({error});
         };
     };
+
+    async destroy(req: Request, res: Response): Promise<Response> {
+        req.user.id && (await new AuthService().singOut(req.user.token))
+
+        return res.status(200).send()
+    }
 };
  
 export default new AuthController()

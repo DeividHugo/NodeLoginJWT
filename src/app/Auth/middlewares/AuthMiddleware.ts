@@ -10,7 +10,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     }
 
     const [, token] = authHeader.split(' ');
-
+    
     try {
         const authService = new AuthService()
         const id = await authService.validateToken(token)
